@@ -1,122 +1,153 @@
-import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import './App.css'
+
+import { useEffect, useState } from "react";
+import { getProducts } from "./services/api";
+
+import Navbar from "./components/Navbar";
+import Hero from "./components/Hero";
+import ProductList from "./components/ProductList";
+import Footer from "./components/Footer";
+
+const categories = [
+  { label: "Eletrônicos", value: "electronics" },
+  { label: "Todos", value: "all" },
+  { label: "Roupas masculinas", value: "men's clothing" },
+  { label: "Roupas femininas", value: "women's clothing" },
+  { label: "Joias", value: "jewelery" },
+];
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [search, setSearch] = useState("");
+  const [category, setCategory] = useState("electronics");
+
+  useEffect(() => {
+    async function loadProducts() {
+      try {
+        const data = await getProducts();
+        setProducts(data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadProducts();
+  }, []);
+
+  const filteredProducts = products.filter((product) => {
+    const matchesCategory =
+      category === "all" || product.category === category;
+
+    const matchesSearch = product.title
+      .toLowerCase()
+      .includes(search.toLowerCase().trim());
+
+    return matchesCategory && matchesSearch;
+  });
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
+    <div className="min-h-screen bg-gray-50 text-gray-900">
+      <Navbar />
+
+      <Hero />
+
+      <main id="produtos" className="mx-auto max-w-7xl scroll-mt-28 px-6 py-16">
+
+        <div className="mb-10">
+          <span className="text-sm font-bold uppercase tracking-widest text-blue-600">
+            Nosso catálogo
+          </span>
+
+          <h2 className="mt-3 text-3xl font-extrabold tracking-tight md:text-4xl">
+            Explore nossos produtos
+          </h2>
+
+          <p className="mt-3 text-gray-500">
+            Encontre a tecnologia ideal para você.
           </p>
         </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
 
-      <div className="ticks"></div>
+        <section aria-label="Busca e filtros" className="mb-10">
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
+          <div className="mb-6">
+            <label
+              htmlFor="search"
+              className="mb-2 block text-sm font-semibold text-gray-700"
+            >
+              Pesquisar produtos
+            </label>
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+            <input
+              id="search"
+              type="search"
+              value={search}
+              onChange={(event) => setSearch(event.target.value)}
+              placeholder="O que você está procurando?"
+              className="w-full rounded-xl border border-gray-200 bg-white px-5 py-4 text-sm outline-none transition focus:border-blue-500 md:max-w-lg"
+            />
+          </div>
+
+          <div className="flex flex-wrap gap-3">
+            {categories.map((item) => (
+              <button
+                key={item.value}
+                type="button"
+                onClick={() => setCategory(item.value)}
+                aria-pressed={category === item.value}
+                className={`cursor-pointer rounded-full px-5 py-2.5 text-sm font-semibold transition ${category === item.value
+                    ? "bg-blue-600 text-white"
+                    : "border border-gray-200 bg-white text-gray-600 hover:border-blue-500"
+                  }`}
+              >
+                {item.label}
+              </button>
+            ))}
+          </div>
+        </section>
+
+        {loading && (
+          <p className="py-16 text-center text-gray-500">
+            Carregando produtos...
+          </p>
+        )}
+
+        {error && (
+          <p role="alert" className="py-16 text-center text-red-600">
+            {error}
+          </p>
+        )}
+
+        {!loading && !error && (
+          <>
+            <div className="mb-6 flex items-center justify-between">
+              <p className="text-sm text-gray-500">
+                {filteredProducts.length} produto(s) encontrado(s)
+              </p>
+            </div>
+
+            {filteredProducts.length > 0 ? (
+              <ProductList products={filteredProducts} />
+            ) : (
+              <div className="rounded-2xl border border-gray-200 bg-white p-12 text-center">
+                <h3 className="text-lg font-bold">
+                  Nenhum produto encontrado
+                </h3>
+
+                <p className="mt-2 text-gray-500">
+                  Tente outra pesquisa ou selecione uma categoria diferente.
+                </p>
+              </div>
+            )}
+          </>
+        )}
+      </main>
+
+      <Footer />
+    </div>
+  );
 }
 
-export default App
+export default App;

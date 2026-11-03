@@ -1,7 +1,11 @@
 
 import { useEffect, useState } from "react";
 import { getProducts } from "./services/api";
+
+import Navbar from "./components/Navbar";
+import Hero from "./components/Hero";
 import ProductList from "./components/ProductList";
+import Footer from "./components/Footer";
 
 const categories = [
   { label: "Eletrônicos", value: "electronics" },
@@ -45,20 +49,29 @@ function App() {
   });
 
   return (
-    <main className="min-h-screen bg-gray-50 px-6 py-12">
-      <div className="mx-auto max-w-7xl">
+    <div className="min-h-screen bg-gray-50 text-gray-900">
+      <Navbar />
+
+      <Hero />
+
+      <main id="produtos" className="mx-auto max-w-7xl scroll-mt-28 px-6 py-16">
 
         <div className="mb-10">
-          <h1 className="text-4xl font-bold tracking-tight text-gray-900">
-            LOJATECH
-          </h1>
+          <span className="text-sm font-bold uppercase tracking-widest text-blue-600">
+            Nosso catálogo
+          </span>
+
+          <h2 className="mt-3 text-3xl font-extrabold tracking-tight md:text-4xl">
+            Explore nossos produtos
+          </h2>
 
           <p className="mt-3 text-gray-500">
-            Encontre os melhores produtos para você.
+            Encontre a tecnologia ideal para você.
           </p>
         </div>
 
-        <section className="mb-10">
+        <section aria-label="Busca e filtros" className="mb-10">
+
           <div className="mb-6">
             <label
               htmlFor="search"
@@ -72,8 +85,8 @@ function App() {
               type="search"
               value={search}
               onChange={(event) => setSearch(event.target.value)}
-              placeholder="Digite o nome do produto..."
-              className="w-full rounded-xl border border-gray-200 bg-white px-5 py-3 text-sm outline-none transition focus:border-blue-500 md:max-w-md"
+              placeholder="O que você está procurando?"
+              className="w-full rounded-xl border border-gray-200 bg-white px-5 py-4 text-sm outline-none transition focus:border-blue-500 md:max-w-lg"
             />
           </div>
 
@@ -83,6 +96,7 @@ function App() {
                 key={item.value}
                 type="button"
                 onClick={() => setCategory(item.value)}
+                aria-pressed={category === item.value}
                 className={`cursor-pointer rounded-full px-5 py-2.5 text-sm font-semibold transition ${category === item.value
                     ? "bg-blue-600 text-white"
                     : "border border-gray-200 bg-white text-gray-600 hover:border-blue-500"
@@ -95,39 +109,44 @@ function App() {
         </section>
 
         {loading && (
-          <p className="text-center text-gray-500">
+          <p className="py-16 text-center text-gray-500">
             Carregando produtos...
           </p>
         )}
 
         {error && (
-          <p role="alert" className="text-center text-red-600">
+          <p role="alert" className="py-16 text-center text-red-600">
             {error}
           </p>
         )}
 
         {!loading && !error && (
           <>
-            <p className="mb-6 text-sm text-gray-500">
-              {filteredProducts.length} produto(s) encontrado(s)
-            </p>
+            <div className="mb-6 flex items-center justify-between">
+              <p className="text-sm text-gray-500">
+                {filteredProducts.length} produto(s) encontrado(s)
+              </p>
+            </div>
 
             {filteredProducts.length > 0 ? (
               <ProductList products={filteredProducts} />
             ) : (
-              <div className="rounded-xl border border-gray-200 bg-white p-12 text-center">
-                <h2 className="text-lg font-semibold text-gray-900">
+              <div className="rounded-2xl border border-gray-200 bg-white p-12 text-center">
+                <h3 className="text-lg font-bold">
                   Nenhum produto encontrado
-                </h2>
+                </h3>
+
                 <p className="mt-2 text-gray-500">
-                  Tente pesquisar outro nome ou selecionar outra categoria.
+                  Tente outra pesquisa ou selecione uma categoria diferente.
                 </p>
               </div>
             )}
           </>
         )}
-      </div>
-    </main>
+      </main>
+
+      <Footer />
+    </div>
   );
 }
 

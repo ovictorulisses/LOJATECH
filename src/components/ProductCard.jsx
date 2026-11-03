@@ -17,7 +17,7 @@ function ProductCard({ product }) {
                     {product.category}
                 </span>
 
-                <h2 className="mb-3 line-clamp-2 min-h-12 text-sm font-semibold text-gray-900">
+                <h2 className="mb-3 min-h-12 text-sm font-semibold text-gray-900">
                     {product.title}
                 </h2>
 

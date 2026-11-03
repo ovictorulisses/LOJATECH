@@ -1,6 +1,7 @@
 
 import { useEffect, useState } from "react";
 import { getProducts } from "./services/api";
+import ProductList from "./components/ProductList";
 
 function App() {
   const [products, setProducts] = useState([]);
@@ -23,44 +24,35 @@ function App() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-100 p-8">
-      <h1 className="mb-8 text-center text-4xl font-bold text-blue-600">
-        LOJATECH
-      </h1>
+    <main className="min-h-screen bg-gray-50 px-6 py-12">
+      <div className="mx-auto max-w-7xl">
+        <div className="mb-10">
+          <h1 className="text-4xl font-bold tracking-tight text-gray-900">
+            LOJATECH
+          </h1>
 
-      {loading && (
-        <p className="text-center">Carregando produtos...</p>
-      )}
-
-      {error && (
-        <p role="alert" className="text-center text-red-600">
-          {error}
-        </p>
-      )}
-
-      {!loading && !error && (
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-          {products.map((product) => (
-            <div
-              key={product.id}
-              className="rounded-lg bg-white p-6 shadow-md"
-            >
-              <img
-                src={product.image}
-                alt={product.title}
-                className="mb-4 h-40 w-full object-contain"
-              />
-
-              <h2 className="font-semibold">{product.title}</h2>
-
-              <p className="mt-2 text-lg font-bold text-blue-600">
-                US$ {product.price.toFixed(2)}
-              </p>
-            </div>
-          ))}
+          <p className="mt-3 text-gray-500">
+            Confira nossa seleção de produtos.
+          </p>
         </div>
-      )}
-    </div>
+
+        {loading && (
+          <p className="text-center text-gray-500">
+            Carregando produtos...
+          </p>
+        )}
+
+        {error && (
+          <p role="alert" className="text-center text-red-600">
+            {error}
+          </p>
+        )}
+
+        {!loading && !error && (
+          <ProductList products={products} />
+        )}
+      </div>
+    </main>
   );
 }
 
